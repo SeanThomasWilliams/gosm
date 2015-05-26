@@ -35,6 +35,12 @@ func (t *Tile) Num2deg() (lat float64, long float64) {
 	return lat, long
 }
 
+func (t *Tile) GetBoundingBox() (ulx, uly, lrx, lry float64) {
+	// LRX and LRY should correspond to tile x+1, y+1
+	lrTile := NewTileWithXY(t.X+1, t.Y+1, t.Z)
+	return t.Long, t.Lat, lrTile.Long, lrTile.Lat
+}
+
 func NewTileWithLatLong(lat float64, long float64, z int) (t *Tile) {
 	t = new(Tile)
 	t.Lat = lat
@@ -51,6 +57,37 @@ func NewTileWithXY(x int, y int, z int) (t *Tile) {
 	t.Y = y
 	t.Lat, t.Long = t.Num2deg()
 	return
+}
+
+// Get all tiles for a given zoom level
+func GetAllTilesForZoomLevel(z int) []*Tile {
+	tiles := []*Tile{}
+
+	max := int(math.Pow(2, float64(z))) - 1
+	for x := 0; x <= max; x++ {
+		for y := 0; y <= max; y++ {
+			tile := NewTileWithXY(x, y, z)
+			tiles = append(tiles, tile)
+		}
+	}
+
+	return tiles
+}
+
+// Get all tiles in a bounding box at a zoom level
+func GetTilesInBBoxForZoom(ulx, uly, lrx, lry float64, z int) ([]*Tile, error) {
+	tiles := []*Tile{}
+	tMax := NewTileWithLatLong(uly, ulx, z)
+	tMin := NewTileWithLatLong(lry, lrx, z)
+
+	for x := tMax.X; x <= tMin.X; x++ {
+		for y := tMax.Y; y <= tMin.Y; y++ {
+			tile := NewTileWithXY(x, y, z)
+			tiles = append(tiles, tile)
+		}
+	}
+
+	return tiles, nil
 }
 
 func BBoxTiles(topTile Tile, bottomTile Tile) ([]*Tile, error) {

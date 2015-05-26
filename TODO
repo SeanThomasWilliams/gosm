@@ -1,0 +1,17 @@
+### WMTS Test
+ # Take an image from GDAL
+ # Get the bounding box
+ # Generate output images for one layer of WMS
+ # Each image should be 256x256 pixel PNG files: This will also allow us to cache from other servers... and even distribute imagery in a cache-miss scenario to other servers
+ # See if this works by generating a simple static WMTS server
+ # Optimize a ton...
+
+### Slap Geoserver/GeoWebCache on top of the WMTS to get something out the door
+
+### Try to combine multiple images
+# Create a process which buckets the images, then fuses them
+ # Can use slippy tile directory structure
+
+### Imagery ingest strategy
+ # Take an image and chip out pieces of it at the top zoom level down to the bottom, until the ppm of the slippy tile is better than the source image
+ # If a zoom level isn't present, use the tile above it and zoom in
